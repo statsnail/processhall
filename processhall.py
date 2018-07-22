@@ -1,7 +1,7 @@
 ##!/usr/bin/env python
 
-import scale.scale
-import labelwriter.labelwriter
+from scale.scale import Scale
+from labelwriter.labelwriter import Labelwriter
 
 def main():
     print("running processhall application")
