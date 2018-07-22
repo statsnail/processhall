@@ -8,6 +8,7 @@ import keyboard
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import Calendar
+from decimal import *
 
 HUGE_FONT = ("Verdana", 24)
 LARGE_FONT = ("Verdana", 12)
@@ -75,7 +76,7 @@ class ProcesshallApp(tk.Tk):
         label = tk.Label(container, text="Scale:", font=HUGE_FONT)
         label.grid(row=0, column=3, sticky=tk.W)
 
-        lblWeight = tk.Label(container, textvariable=self._dweight, font=HUGE_FONT)
+        lblWeight = tk.Label(container, textvariable=self._dweight, font=HUGE_FONT, width=7, background='snow')
         lblWeight.grid(row=0, column=4, sticky=tk.E)
 
         label = tk.Label(container, text="Status:", font=HUGE_FONT)
@@ -116,7 +117,7 @@ def main():
     myscale = Scale('192.168.1.4','4001')
 
     app = ProcesshallApp()
-    app.geometry("1280x720")
+    app.geometry("1024x768")
     app.resizable(0, 0)
 
     #keyboard.add_hotkey('space', printlabel)
