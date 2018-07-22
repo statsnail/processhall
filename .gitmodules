@@ -1,6 +1,0 @@
-[submodule "py-scale"]
-	path = py-scale
-	url = https://github.com/joakimsk/py-scale
-[submodule "py-labelwriter"]
-	path = py-labelwriter
-	url = https://github.com/joakimsk/py-labelwriter
