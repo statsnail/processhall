@@ -15,6 +15,17 @@ LARGE_FONT = ("Verdana", 12)
 NORM_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
 
+g_dweight = ''
+
+
+def printlabel(labelwriter):
+    print('printing label')
+    data = {'friendlyname':'Common Periwinkle', 'scientificname':'LITTORINA LITTOREA',
+    'productinthirdlanguage':'Produit', 'gtin':'7072773000030', 'processingmethod':'Climbed',
+    'batchno':'000001', 'grade':'Super Jumbo', 'catchdate':'2018-05-10', 'weight':g_dweight, 'pcskg':'100-141 #/kg'}
+    print(data)
+    labelwriter.print_label(data)
+
 class ProcesshallApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -175,21 +186,29 @@ class ProcesshallApp(tk.Tk):
         self._status.set(str(value))
 
 def main():
+    global g_dweight
     print("running processhall application")
     myscale = Scale('192.168.1.4','4001')
+
+    mylabelwriter = Labelwriter('192.168.1.3', 9100)
+    mylabelwriter.beep()
 
     app = ProcesshallApp()
     app.geometry("800x600")
     app.resizable(0, 0)
 
+    app._labelwriteronline = 1
     app._scaleonline = 1
-    #keyboard.add_hotkey('space', printlabel)
+    
+    keyboard.add_hotkey('space', lambda: printlabel(mylabelwriter))
+    
     LOOP_ACTIVE = True
     while LOOP_ACTIVE:
         app.update()
         scaledata = myscale.lastdata()
         app.status = scaledata[1]
         app.dweight = scaledata[2]
+        g_dweight = scaledata[2]
 
     app.quit()
 
