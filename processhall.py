@@ -93,9 +93,9 @@ class ProcesshallApp(tk.Tk):
         txtCustomer = tk.Entry(self.lfLabelEntry, background = "snow")
         txtCustomer.grid(row=5, column=1, sticky=tk.W)
 
-        btnPrintlabel = ttk.Button(self.container, text="Print label",
+        btnPrintlabel = ttk.Button(self.lfLabelWriterOnline, text="Print label",
                             command=lambda: print('hello'))
-        btnPrintlabel.grid(row=2, column=0, sticky=tk.EW)
+        btnPrintlabel.grid(row=1, column=0, sticky=tk.EW)
 
         # self.lfScale
         label = tk.Label(self.lfScale, text="Weight:", font=HUGE_FONT, padx=10,pady=10)
@@ -179,7 +179,7 @@ def main():
     myscale = Scale('192.168.1.4','4001')
 
     app = ProcesshallApp()
-    app.geometry("800x500")
+    app.geometry("800x600")
     app.resizable(0, 0)
 
     app._scaleonline = 1
