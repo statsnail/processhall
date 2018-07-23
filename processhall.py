@@ -19,18 +19,25 @@ class ProcesshallApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
+        self._tweight = tk.StringVar()
         self._dweight = tk.StringVar()
         self._status = tk.StringVar()
+
+        self._labelwriteronline = 0
+        self._scaleonline = 0
 
         s = ttk.Style(self)
         s.theme_use('clam')
 
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand=True)
-        container.grid_rowconfigure(200, weight=1)
-        container.grid_columnconfigure(200, weight=1)
+        self.configure(background='#dde1e3')
+        self.tk_setPalette(background='#dde1e3', foreground='black', activeBackground='black', activeForeground='red')
 
-        menubar = tk.Menu(container)
+        self.container = tk.Frame(self)
+        self.container.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
+
+        menubar = tk.Menu(self.container)
         filemenu = tk.Menu(menubar, tearoff=0)
         filemenu.add_command(label="Save settings", command=lambda: popupmsg("Not supported just yet"))
         filemenu.add_separator()
@@ -38,7 +45,29 @@ class ProcesshallApp(tk.Tk):
         menubar.add_cascade(label="File", menu=filemenu)
         tk.Tk.config(self, menu=menubar)
 
-        label = tk.Label(container, text="Product:", font=HUGE_FONT)
+        # labelframes
+        self.lfLabelEntry = tk.LabelFrame(self.container, text='Label Entry')
+        self.lfLabelEntry.grid(row=0,column=0,sticky=tk.EW)
+
+        self.lfScale = tk.LabelFrame(self.container, text='Scale')
+        self.lfScale.grid(row=1,column=0,sticky=tk.EW)
+
+        self.lfLabelWriterOnline = tk.LabelFrame(self.container, text='Label Writer Online?')
+        self.lfLabelWriterOnline.grid(row=0,column=1,sticky=tk.EW)
+
+        self.lfScaleOnline = tk.LabelFrame(self.container, text='Scale Online?')
+        self.lfScaleOnline.grid(row=1,column=1,sticky=tk.EW)
+
+        # self.lfLabelWriterOnline
+        self.lblLabelWriterOnline = tk.Label(self.lfLabelWriterOnline, text="NA", font=HUGE_FONT, padx=10,pady=10)
+        self.lblLabelWriterOnline.grid(row=0, column=0, sticky=tk.W)
+
+        # self.lfScaleOnline
+        self.lblScaleOnline = tk.Label(self.lfScaleOnline, text="NA", font=HUGE_FONT, padx=10,pady=10)
+        self.lblScaleOnline.grid(row=0, column=0, sticky=tk.W)
+
+        # self.lfLabelEntry
+        label = tk.Label(self.lfLabelEntry, text="Product:", font=HUGE_FONT, padx=10,pady=10)
         label.grid(row=0, column=0, sticky=tk.W)
 
         products = [("Common Periwinkle - Ungraded", "7072773000009"),
@@ -50,47 +79,88 @@ class ProcesshallApp(tk.Tk):
         selectedProduct = tk.StringVar()
         selectedProduct.set("Common Periwinkle - Ungraded")
 
-        productMenu = tk.OptionMenu(container, selectedProduct, *products)
+        productMenu = tk.OptionMenu(self.lfLabelEntry, selectedProduct, *products)
         productMenu.grid(row=0, column=1, sticky=tk.W)
 
-        label = tk.Label(container, text="Batch no:", font=HUGE_FONT)
+        label = tk.Label(self.lfLabelEntry, text="Batch no:", font=HUGE_FONT, padx=10,pady=10)
         label.grid(row=1, column=0, sticky=tk.W)
-        txtBatchNo = ttk.Entry(container)
-        txtBatchNo.grid(row=1, column=1, sticky=tk.W)
 
-        label = tk.Label(container, text="Catch date:", font=HUGE_FONT)
+        eBatchNo = tk.Entry(self.lfLabelEntry, background = "snow")
+        eBatchNo.grid(row=1, column=1, sticky=tk.W)
+        eBatchNo.insert(0, "000001")
+
+        label = tk.Label(self.lfLabelEntry, text="Catch date:", font=HUGE_FONT, padx=10,pady=10)
         label.grid(row=2, column=0, sticky=tk.W)
 
-        cal = Calendar(container, width=12, background='black', foreground='white', borderwidth=2)
+        cal = Calendar(self.lfLabelEntry, width=5, background='black', foreground='white', borderwidth=2)
         cal.grid(row=2, column=1, sticky=tk.W)
 
-        label = tk.Label(container, text="Customer:", font=HUGE_FONT)
-        label.grid(row=3, column=0, sticky=tk.W)
+        label = tk.Label(self.lfLabelEntry, text="Customer:", font=HUGE_FONT, padx=10,pady=10)
+        label.grid(row=5, column=0, sticky=tk.W)
 
-        txtCustomer = ttk.Entry(container)
-        txtCustomer.grid(row=3, column=1, sticky=tk.W)
+        txtCustomer = tk.Entry(self.lfLabelEntry, background = "snow")
+        txtCustomer.grid(row=5, column=1, sticky=tk.W)
 
-        frame = tk.Frame(container, width=100)
-        frame.grid(row=0, column=2)
+        btnPrintlabel = ttk.Button(self.container, text="Print label",
+                            command=lambda: print('hello'))
+        btnPrintlabel.grid(row=2, column=0, sticky=tk.EW)
 
-        label = tk.Label(container, text="Scale:", font=HUGE_FONT)
+        # self.lfScale
+        label = tk.Label(self.lfScale, text="Weight:", font=HUGE_FONT, padx=10,pady=10)
         label.grid(row=0, column=3, sticky=tk.W)
 
-        lblWeight = tk.Label(container, textvariable=self._dweight, font=HUGE_FONT, width=7, background='snow')
-        lblWeight.grid(row=0, column=4, sticky=tk.E)
+        lblDWeight = tk.Label(self.lfScale, textvariable=self._dweight, font=HUGE_FONT, width=5, padx=10,pady=10)
+        lblDWeight.grid(row=0, column=4, sticky=tk.W)
 
-        label = tk.Label(container, text="Status:", font=HUGE_FONT)
+        label = tk.Label(self.lfScale, text="Tare weight:", font=SMALL_FONT)
+        label.grid(row=0, column=6, sticky=tk.E)
+
+        lblTWeight = tk.Label(self.lfScale, textvariable=self._tweight, font=SMALL_FONT, width=5)
+        lblTWeight.grid(row=0, column=7, sticky=tk.W)
+
+        label = tk.Label(self.lfScale, text="kg", font=SMALL_FONT)
+        label.grid(row=0, column=8, sticky=tk.W)
+
+        label = tk.Label(self.lfScale, text="Status:", font=HUGE_FONT, padx=10,pady=10)
         label.grid(row=1, column=3, sticky=tk.W)
 
-        lblStatus = tk.Label(container, textvariable=self._status, font=HUGE_FONT)
-        lblStatus.grid(row=1, column=4, sticky=tk.E)
+        self.lblStatus = tk.Label(self.lfScale, textvariable=self._status, font=HUGE_FONT, padx=10,pady=10)
+        self.lblStatus.grid(row=1, column=4, sticky=tk.W)
+        
 
-        label = tk.Label(container, text="kg", font=HUGE_FONT)
+        label = tk.Label(self.lfScale, text="kg", font=HUGE_FONT)
         label.grid(row=0, column=5, sticky=tk.W)
+        
+        self.update_colors_and_status()
+        #seperator1 = ttk.Separator(container, orient=tk.HORIZONTAL)
+        #seperator1.grid(row=6,column=2,sticky=tk.EW)
 
-        btnPrintlabel = ttk.Button(container, text="Print label",
-                            command=lambda: print('hello'))
-        btnPrintlabel.grid(row=5, column=0, sticky=tk.W)
+    def update_colors_and_status(self):
+        if 'ST' in self._status.get():
+            self.lblStatus.configure(background= 'green')
+        elif 'US' in self._status.get():
+            self.lblStatus.configure(background= 'red')
+        else:
+            self.lblStatus.configure(background= 'yellow')
+
+        if self._scaleonline:
+            self.lfScaleOnline.configure(background= 'green')
+            self.lblScaleOnline.configure(background= 'green')
+            self.lblScaleOnline['text'] = 'ON'
+        else:
+            self.lfScaleOnline.configure(background= 'red')
+            self.lblScaleOnline.configure(background= 'red')
+            self.lblScaleOnline['text'] = 'OFF'
+
+        if self._labelwriteronline:
+            self.lfLabelWriterOnline.configure(background= 'green')
+            self.lblLabelWriterOnline.configure(background= 'green')
+            self.lblLabelWriterOnline['text'] = 'ON'
+        else:
+            self.lfLabelWriterOnline.configure(background= 'red')
+            self.lblLabelWriterOnline.configure(background= 'red')
+            self.lblLabelWriterOnline['text'] = 'OFF'
+        tk.Tk.after(self, 100, lambda: self.update_colors_and_status())
 
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -120,6 +190,7 @@ def main():
     app.geometry("1024x768")
     app.resizable(0, 0)
 
+    app._scaleonline = 1
     #keyboard.add_hotkey('space', printlabel)
     LOOP_ACTIVE = True
     while LOOP_ACTIVE:
@@ -127,6 +198,7 @@ def main():
         scaledata = myscale.lastdata()
         app.status = scaledata[1]
         app.dweight = scaledata[2]
+
     app.quit()
 
 if __name__ == '__main__':
