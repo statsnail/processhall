@@ -37,14 +37,6 @@ class ProcesshallApp(tk.Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        menubar = tk.Menu(self.container)
-        filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Save settings", command=lambda: popupmsg("Not supported just yet"))
-        filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=quit)
-        menubar.add_cascade(label="File", menu=filemenu)
-        tk.Tk.config(self, menu=menubar)
-
         # labelframes
         self.lfLabelEntry = tk.LabelFrame(self.container, text='Label Entry')
         self.lfLabelEntry.grid(row=0,column=0,sticky=tk.EW)
@@ -187,7 +179,7 @@ def main():
     myscale = Scale('192.168.1.4','4001')
 
     app = ProcesshallApp()
-    app.geometry("800x600")
+    app.geometry("800x550")
     app.resizable(0, 0)
 
     app._scaleonline = 1
