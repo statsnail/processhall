@@ -179,7 +179,7 @@ def main():
     myscale = Scale('192.168.1.4','4001')
 
     app = ProcesshallApp()
-    app.geometry("800x550")
+    app.geometry("800x500")
     app.resizable(0, 0)
 
     app._scaleonline = 1
