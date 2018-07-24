@@ -11,7 +11,7 @@ from tkcalendar import Calendar
 from decimal import *
 
 HUGE_FONT = ("Verdana", 24)
-LARGE_FONT = ("Verdana", 12)
+LARGE_FONT = ("Verdana", 16)
 NORM_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
 
@@ -83,52 +83,52 @@ class ProcesshallApp(tk.Tk):
         self.lfScaleOnline.grid(row=1,column=1,sticky=tk.EW)
 
         # self.lfLabelWriterOnline
-        self.lblLabelWriterOnline = tk.Label(self.lfLabelWriterOnline, text="NA", font=HUGE_FONT, padx=10,pady=10)
+        self.lblLabelWriterOnline = tk.Label(self.lfLabelWriterOnline, text="NA", font=LARGE_FONT, padx=10,pady=10)
         self.lblLabelWriterOnline.grid(row=0, column=0, sticky=tk.W)
 
         # self.lfScaleOnline
-        self.lblScaleOnline = tk.Label(self.lfScaleOnline, text="NA", font=HUGE_FONT, padx=10,pady=10)
+        self.lblScaleOnline = tk.Label(self.lfScaleOnline, text="NA", font=LARGE_FONT, padx=10,pady=10)
         self.lblScaleOnline.grid(row=0, column=0, sticky=tk.W)
 
         # self.lfLabelEntry
-        self.label = tk.Label(self.lfLabelEntry, text="Product:", font=HUGE_FONT, padx=10,pady=10)
+        self.label = tk.Label(self.lfLabelEntry, text="Product:", font=LARGE_FONT, padx=10,pady=10)
         self.label.grid(row=0, column=0, sticky=tk.W)
         
         self.productMenu = tk.OptionMenu(self.lfLabelEntry, self._selectedProduct, *self._products.keys())
         self.productMenu.grid(row=0, column=1, sticky=tk.W)
 
-        self.label = tk.Label(self.lfLabelEntry, text="Grade:", font=HUGE_FONT, padx=10,pady=10)
+        self.label = tk.Label(self.lfLabelEntry, text="Grade:", font=LARGE_FONT, padx=10,pady=10)
         self.label.grid(row=1, column=0, sticky=tk.W)
 
         self.gradeMenu = tk.OptionMenu(self.lfLabelEntry, self._selectedGrade, *self._grades.keys())
         self.gradeMenu.grid(row=1, column=1, sticky=tk.W)
 
 
-        self.label = tk.Label(self.lfLabelEntry, text="Product Language:", font=HUGE_FONT, padx=10,pady=10)
+        self.label = tk.Label(self.lfLabelEntry, text="Product Language:", font=LARGE_FONT, padx=10,pady=10)
         self.label.grid(row=2, column=0, sticky=tk.W)
         self.productlanguageMenu = tk.OptionMenu(self.lfLabelEntry, self._selectedProductLanguage, *self._productlanguages.keys())
         self.productlanguageMenu.grid(row=2, column=1, sticky=tk.W)
 
 
-        self.label = tk.Label(self.lfLabelEntry, text="Processing:", font=HUGE_FONT, padx=10,pady=10)
+        self.label = tk.Label(self.lfLabelEntry, text="Processing:", font=LARGE_FONT, padx=10,pady=10)
         self.label.grid(row=3, column=0, sticky=tk.W)
         self.processingmenu = tk.OptionMenu(self.lfLabelEntry, self._selectedProcessing, *self._processes)
         self.processingmenu.grid(row=3, column=1, sticky=tk.W)
 
-        self.label = tk.Label(self.lfLabelEntry, text="Batch no:", font=HUGE_FONT, padx=10,pady=10)
+        self.label = tk.Label(self.lfLabelEntry, text="Batch no:", font=LARGE_FONT, padx=10,pady=10)
         self.label.grid(row=4, column=0, sticky=tk.W)
 
         self.eBatchNo = tk.Entry(self.lfLabelEntry, background = "snow")
         self.eBatchNo.grid(row=4, column=1, sticky=tk.W)
         self.eBatchNo.insert(0, "000001")
 
-        self.label = tk.Label(self.lfLabelEntry, text="Catch date:", font=HUGE_FONT, padx=10,pady=10)
+        self.label = tk.Label(self.lfLabelEntry, text="Catch date:", font=LARGE_FONT, padx=10,pady=10)
         self.label.grid(row=5, column=0, sticky=tk.W)
 
         self.cal = Calendar(self.lfLabelEntry, width=5, background='black', foreground='white', borderwidth=2)
         self.cal.grid(row=5, column=1, sticky=tk.W)
 
-        self.label = tk.Label(self.lfLabelEntry, text="Customer:", font=HUGE_FONT, padx=10,pady=10)
+        self.label = tk.Label(self.lfLabelEntry, text="Customer:", font=LARGE_FONT, padx=10,pady=10)
         self.label.grid(row=6, column=0, sticky=tk.W)
 
         self.txtCustomer = tk.Entry(self.lfLabelEntry, background = "snow")
@@ -143,7 +143,7 @@ class ProcesshallApp(tk.Tk):
         self.label.grid(row=0, column=3, sticky=tk.W)
 
         self.lblDWeight = tk.Label(self.lfScale, textvariable=self._dweight, font=HUGE_FONT, width=5, padx=10,pady=10)
-        self.lblDWeight.grid(row=0, column=4, sticky=tk.W)
+        self.lblDWeight.grid(row=0, column=4, sticky=tk.E)
 
         self.label = tk.Label(self.lfScale, text="Tare weight:", font=SMALL_FONT)
         self.label.grid(row=0, column=6, sticky=tk.E)
@@ -157,8 +157,8 @@ class ProcesshallApp(tk.Tk):
         self.label = tk.Label(self.lfScale, text="Status:", font=HUGE_FONT, padx=10,pady=10)
         self.label.grid(row=1, column=3, sticky=tk.W)
 
-        self.lblStatus = tk.Label(self.lfScale, textvariable=self._status, font=HUGE_FONT, padx=10,pady=10)
-        self.lblStatus.grid(row=1, column=4, sticky=tk.W)
+        self.lblStatus = tk.Label(self.lfScale, textvariable=self._status, font=HUGE_FONT, padx=50,pady=10)
+        self.lblStatus.grid(row=1, column=4, sticky=tk.E)
         
 
         self.label = tk.Label(self.lfScale, text="kg", font=HUGE_FONT)
@@ -253,7 +253,7 @@ def main():
 
 
     app = ProcesshallApp()
-    app.geometry("800x800")
+    app.geometry("800x600")
     app.resizable(0, 0)
     
     #keyboard.add_hotkey('space', lambda: printlabel(mylabelwriter))
