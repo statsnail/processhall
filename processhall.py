@@ -15,11 +15,11 @@ LARGE_FONT = ("Verdana", 16)
 NORM_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
 
-g_dweight = ''
-
 class ProcesshallApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+
+        self._printlabelnext = False
 
         self._selectedProductLanguage = tk.StringVar()
         self._productlanguages = {"Norway":"",
@@ -135,7 +135,7 @@ class ProcesshallApp(tk.Tk):
         self.txtCustomer.grid(row=6, column=1, sticky=tk.W)
 
         self.btnPrintlabel = ttk.Button(self.lfLabelWriterOnline, text="Print label",
-                            command=lambda:self.printlabel(self.mylabelwriter))
+                            command=self.printlabel)
         self.btnPrintlabel.grid(row=1, column=0, sticky=tk.EW)
 
         # self.lfScale
@@ -203,6 +203,10 @@ class ProcesshallApp(tk.Tk):
             self.lfLabelWriterOnline.configure(background= 'red')
             self.lblLabelWriterOnline.configure(background= 'red')
             self.lblLabelWriterOnline['text'] = 'OFF'
+
+        if self._printlabelnext:
+            self.printlabel()
+
         tk.Tk.after(self, 100, lambda: self.update_colors_and_status())
 
     def show_frame(self, cont):
@@ -225,9 +229,9 @@ class ProcesshallApp(tk.Tk):
     def status(self, value):
         self._status.set(str(value))
 
-    def printlabel(self,labelwriter):
+    def printlabel(self):
         print('printing label')
-
+        labelwriter = self.mylabelwriter
         scientificnames = {"Common Periwinkle":"LITTORINA LITTOREA", "Green Sea Urchin":"STRONGYLOCENTROTUS DROEBACHIENSIS"}
 
         friendlyname = self._selectedProduct.get()
@@ -247,6 +251,11 @@ class ProcesshallApp(tk.Tk):
         'batchno':'000001', 'grade':grade, 'catchdate':catchdate, 'weight':weight, 'pcskg':gradedetail, 'customer':customer}
         #print(data)
         labelwriter.print_label(data)
+        self._printlabelnext = False
+
+def printlabelnext(theapp):
+    theapp._printlabelnext = True
+    print('labelnext')
 
 def main():
     print("running processhall application")
@@ -256,7 +265,9 @@ def main():
     app.geometry("800x700")
     app.resizable(0, 0)
     
-    keyboard.add_hotkey('space', lambda: self.printlabel(self.mylabelwriter))
+
+
+    keyboard.add_hotkey('space', lambda: printlabelnext(app))
     
     LOOP_ACTIVE = True
     while LOOP_ACTIVE:
