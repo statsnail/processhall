@@ -17,26 +17,47 @@ SMALL_FONT = ("Verdana", 8)
 
 g_dweight = ''
 
-
-def printlabel(labelwriter):
-    print('printing label')
-    data = {'friendlyname':'Common Periwinkle', 'scientificname':'LITTORINA LITTOREA',
-    'productinthirdlanguage':'Produit', 'gtin':'7072773000030', 'processingmethod':'Climbed',
-    'batchno':'000001', 'grade':'Super Jumbo', 'catchdate':'2018-05-10', 'weight':g_dweight, 'pcskg':'100-141 #/kg'}
-    print(data)
-    labelwriter.print_label(data)
-
 class ProcesshallApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
+        self._selectedProductLanguage = tk.StringVar()
+        self._productlanguages = {"Norway":"",
+        "France":"Produit",
+        "Spain":"Producto"
+        }
+        self._selectedProductLanguage.set("Select a product language")
+
+        self._selectedProduct = tk.StringVar()
+        self._products = {"Common Periwinkle":"7072773000009",
+        "Green Sea Urchin":"7072773000016"
+        }
+        self._selectedProduct.set("Select a product")
+
+        self._selectedGrade = tk.StringVar()
+        self._grades = {"Ungraded":"",
+        "Large":"> 190 #/kg", "Jumbo":"140-190 #/kg", "Super Jumbo":"100-140 #/kg",
+        "Statsnail":"< 100 #/kg","Normal":"50-100 g/#",
+        "Big":"100-150 g/#","Huge":"> 150 g/#"
+        }
+        self._selectedGrade.set("Select a grade")
+
+        self._selectedProcessing = tk.StringVar()
+        self._processes = ('Climbed', 'Unprocessed')
+        self._selectedProcessing.set("Climbed")
+
         self._tweight = tk.StringVar()
         self._dweight = tk.StringVar()
         self._status = tk.StringVar()
+        self._labelwriteronline = False
+        self._scaleonline = False
 
-        self._labelwriteronline = 0
-        self._scaleonline = 0
 
+        self.myscale = Scale('192.168.1.4','4001')
+
+        self.mylabelwriter = Labelwriter('192.168.1.3', 9100)
+        self.mylabelwriter.beep()
+        
         s = ttk.Style(self)
         s.theme_use('clam')
 
@@ -70,75 +91,94 @@ class ProcesshallApp(tk.Tk):
         self.lblScaleOnline.grid(row=0, column=0, sticky=tk.W)
 
         # self.lfLabelEntry
-        label = tk.Label(self.lfLabelEntry, text="Product:", font=HUGE_FONT, padx=10,pady=10)
-        label.grid(row=0, column=0, sticky=tk.W)
+        self.label = tk.Label(self.lfLabelEntry, text="Product:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=0, column=0, sticky=tk.W)
+        
+        self.productMenu = tk.OptionMenu(self.lfLabelEntry, self._selectedProduct, *self._products.keys())
+        self.productMenu.grid(row=0, column=1, sticky=tk.W)
 
-        products = [("Common Periwinkle - Ungraded", "7072773000009"),
-        ("Common Periwinkle - Large", "7072773000016"),
-        ("Common Periwinkle - Jumbo", "7072773000023"),
-        ("Common Periwinkle - Super Jumbo", "7072773000030"),
-        ("Common Periwinkle - Statsnail", "7072773000047")
-        ]
-        selectedProduct = tk.StringVar()
-        selectedProduct.set("Common Periwinkle - Ungraded")
+        self.label = tk.Label(self.lfLabelEntry, text="Grade:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=1, column=0, sticky=tk.W)
 
-        productMenu = tk.OptionMenu(self.lfLabelEntry, selectedProduct, *products)
-        productMenu.grid(row=0, column=1, sticky=tk.W)
+        self.gradeMenu = tk.OptionMenu(self.lfLabelEntry, self._selectedGrade, *self._grades.keys())
+        self.gradeMenu.grid(row=1, column=1, sticky=tk.W)
 
-        label = tk.Label(self.lfLabelEntry, text="Batch no:", font=HUGE_FONT, padx=10,pady=10)
-        label.grid(row=1, column=0, sticky=tk.W)
 
-        eBatchNo = tk.Entry(self.lfLabelEntry, background = "snow")
-        eBatchNo.grid(row=1, column=1, sticky=tk.W)
-        eBatchNo.insert(0, "000001")
+        self.label = tk.Label(self.lfLabelEntry, text="Product Language:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=2, column=0, sticky=tk.W)
+        self.productlanguageMenu = tk.OptionMenu(self.lfLabelEntry, self._selectedProductLanguage, *self._productlanguages.keys())
+        self.productlanguageMenu.grid(row=2, column=1, sticky=tk.W)
 
-        label = tk.Label(self.lfLabelEntry, text="Catch date:", font=HUGE_FONT, padx=10,pady=10)
-        label.grid(row=2, column=0, sticky=tk.W)
 
-        cal = Calendar(self.lfLabelEntry, width=5, background='black', foreground='white', borderwidth=2)
-        cal.grid(row=2, column=1, sticky=tk.W)
+        self.label = tk.Label(self.lfLabelEntry, text="Processing:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=3, column=0, sticky=tk.W)
+        self.processingmenu = tk.OptionMenu(self.lfLabelEntry, self._selectedProcessing, *self._processes)
+        self.processingmenu.grid(row=3, column=1, sticky=tk.W)
 
-        label = tk.Label(self.lfLabelEntry, text="Customer:", font=HUGE_FONT, padx=10,pady=10)
-        label.grid(row=5, column=0, sticky=tk.W)
+        self.label = tk.Label(self.lfLabelEntry, text="Batch no:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=4, column=0, sticky=tk.W)
 
-        txtCustomer = tk.Entry(self.lfLabelEntry, background = "snow")
-        txtCustomer.grid(row=5, column=1, sticky=tk.W)
+        self.eBatchNo = tk.Entry(self.lfLabelEntry, background = "snow")
+        self.eBatchNo.grid(row=4, column=1, sticky=tk.W)
+        self.eBatchNo.insert(0, "000001")
 
-        btnPrintlabel = ttk.Button(self.lfLabelWriterOnline, text="Print label",
-                            command=lambda: print('hello'))
-        btnPrintlabel.grid(row=1, column=0, sticky=tk.EW)
+        self.label = tk.Label(self.lfLabelEntry, text="Catch date:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=5, column=0, sticky=tk.W)
+
+        self.cal = Calendar(self.lfLabelEntry, width=5, background='black', foreground='white', borderwidth=2)
+        self.cal.grid(row=5, column=1, sticky=tk.W)
+
+        self.label = tk.Label(self.lfLabelEntry, text="Customer:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=6, column=0, sticky=tk.W)
+
+        self.txtCustomer = tk.Entry(self.lfLabelEntry, background = "snow")
+        self.txtCustomer.grid(row=6, column=1, sticky=tk.W)
+
+        self.btnPrintlabel = ttk.Button(self.lfLabelWriterOnline, text="Print label",
+                            command=lambda:self.printlabel(self.mylabelwriter))
+        self.btnPrintlabel.grid(row=1, column=0, sticky=tk.EW)
 
         # self.lfScale
-        label = tk.Label(self.lfScale, text="Weight:", font=HUGE_FONT, padx=10,pady=10)
-        label.grid(row=0, column=3, sticky=tk.W)
+        self.label = tk.Label(self.lfScale, text="Weight:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=0, column=3, sticky=tk.W)
 
-        lblDWeight = tk.Label(self.lfScale, textvariable=self._dweight, font=HUGE_FONT, width=5, padx=10,pady=10)
-        lblDWeight.grid(row=0, column=4, sticky=tk.W)
+        self.lblDWeight = tk.Label(self.lfScale, textvariable=self._dweight, font=HUGE_FONT, width=5, padx=10,pady=10)
+        self.lblDWeight.grid(row=0, column=4, sticky=tk.W)
 
-        label = tk.Label(self.lfScale, text="Tare weight:", font=SMALL_FONT)
-        label.grid(row=0, column=6, sticky=tk.E)
+        self.label = tk.Label(self.lfScale, text="Tare weight:", font=SMALL_FONT)
+        self.label.grid(row=0, column=6, sticky=tk.E)
 
-        lblTWeight = tk.Label(self.lfScale, textvariable=self._tweight, font=SMALL_FONT, width=5)
-        lblTWeight.grid(row=0, column=7, sticky=tk.W)
+        self.lblTWeight = tk.Label(self.lfScale, textvariable=self._tweight, font=SMALL_FONT, width=5)
+        self.lblTWeight.grid(row=0, column=7, sticky=tk.W)
 
-        label = tk.Label(self.lfScale, text="kg", font=SMALL_FONT)
-        label.grid(row=0, column=8, sticky=tk.W)
+        self.label = tk.Label(self.lfScale, text="kg", font=SMALL_FONT)
+        self.label.grid(row=0, column=8, sticky=tk.W)
 
-        label = tk.Label(self.lfScale, text="Status:", font=HUGE_FONT, padx=10,pady=10)
-        label.grid(row=1, column=3, sticky=tk.W)
+        self.label = tk.Label(self.lfScale, text="Status:", font=HUGE_FONT, padx=10,pady=10)
+        self.label.grid(row=1, column=3, sticky=tk.W)
 
         self.lblStatus = tk.Label(self.lfScale, textvariable=self._status, font=HUGE_FONT, padx=10,pady=10)
         self.lblStatus.grid(row=1, column=4, sticky=tk.W)
         
 
-        label = tk.Label(self.lfScale, text="kg", font=HUGE_FONT)
-        label.grid(row=0, column=5, sticky=tk.W)
+        self.label = tk.Label(self.lfScale, text="kg", font=HUGE_FONT)
+        self.label.grid(row=0, column=5, sticky=tk.W)
         
         self.update_colors_and_status()
         #seperator1 = ttk.Separator(container, orient=tk.HORIZONTAL)
         #seperator1.grid(row=6,column=2,sticky=tk.EW)
 
     def update_colors_and_status(self):
+        # Naive, todo check status
+        self._labelwriteronline = True
+        self._scaleonline = True
+
+        # Get data from scale
+        scaledata = self.myscale.lastdata()
+        self._status.set(scaledata[1])
+        self._dweight.set(scaledata[2])
+        self._tweight.set(scaledata[3])
+
         if 'ST' in self._status.get():
             self.lblStatus.configure(background= 'green')
         elif 'US' in self._status.get():
@@ -185,32 +225,47 @@ class ProcesshallApp(tk.Tk):
     def status(self, value):
         self._status.set(str(value))
 
-def main():
-    global g_dweight
-    print("running processhall application")
-    myscale = Scale('192.168.1.4','4001')
+    def printlabel(self,labelwriter):
+        print('printing label')
 
-    mylabelwriter = Labelwriter('192.168.1.3', 9100)
-    mylabelwriter.beep()
+        scientificnames = {"Common Periwinkle":"LITTORINA LITTOREA", "Green Sea Urchin":"STRONGYLOCENTROTUS DROEBACHIENSIS"}
+
+        friendlyname = self._selectedProduct.get()
+        gtin = self._products[self._selectedProduct.get()]
+        scientificname = scientificnames[friendlyname]
+        productlanguage = self._productlanguages[self._selectedProductLanguage.get()]
+        batchno = self.eBatchNo.get()
+        grade = self._selectedGrade.get()
+        gradedetail = self._grades[self._selectedGrade.get()]
+        catchdate = str(self.cal.selection_get())
+        weight = self._dweight.get()
+        processingmethod = self._selectedProcessing.get()
+        customer = self.txtCustomer.get()
+
+        data = {'friendlyname':friendlyname, 'scientificname':scientificname,
+        'productinthirdlanguage':productlanguage, 'gtin':gtin, 'processingmethod':processingmethod,
+        'batchno':'000001', 'grade':grade, 'catchdate':catchdate, 'weight':weight, 'pcskg':gradedetail, 'customer':customer}
+        print(data)
+        #labelwriter.print_label(data)
+
+def main():
+    print("running processhall application")
+
 
     app = ProcesshallApp()
     app.geometry("800x600")
     app.resizable(0, 0)
-
-    app._labelwriteronline = 1
-    app._scaleonline = 1
     
-    keyboard.add_hotkey('space', lambda: printlabel(mylabelwriter))
+    #keyboard.add_hotkey('space', lambda: printlabel(mylabelwriter))
     
     LOOP_ACTIVE = True
     while LOOP_ACTIVE:
         app.update()
-        scaledata = myscale.lastdata()
-        app.status = scaledata[1]
-        app.dweight = scaledata[2]
-        g_dweight = scaledata[2]
 
     app.quit()
+
+
+
 
 if __name__ == '__main__':
     main()
