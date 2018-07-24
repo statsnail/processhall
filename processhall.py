@@ -245,18 +245,18 @@ class ProcesshallApp(tk.Tk):
         data = {'friendlyname':friendlyname, 'scientificname':scientificname,
         'productinthirdlanguage':productlanguage, 'gtin':gtin, 'processingmethod':processingmethod,
         'batchno':'000001', 'grade':grade, 'catchdate':catchdate, 'weight':weight, 'pcskg':gradedetail, 'customer':customer}
-        print(data)
-        #labelwriter.print_label(data)
+        #print(data)
+        labelwriter.print_label(data)
 
 def main():
     print("running processhall application")
 
 
     app = ProcesshallApp()
-    app.geometry("800x600")
+    app.geometry("800x700")
     app.resizable(0, 0)
     
-    #keyboard.add_hotkey('space', lambda: printlabel(mylabelwriter))
+    keyboard.add_hotkey('space', lambda: self.printlabel(self.mylabelwriter))
     
     LOOP_ACTIVE = True
     while LOOP_ACTIVE:
