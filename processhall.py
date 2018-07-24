@@ -253,7 +253,7 @@ def main():
 
 
     app = ProcesshallApp()
-    app.geometry("800x600")
+    app.geometry("800x800")
     app.resizable(0, 0)
     
     #keyboard.add_hotkey('space', lambda: printlabel(mylabelwriter))
