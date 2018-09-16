@@ -1,6 +1,8 @@
 [submodule "scale"]
 	path = scale
 	url = https://github.com/joakimsk/scale.git
+    ignore = dirty
 [submodule "labelwriter"]
 	path = labelwriter
 	url = https://github.com/joakimsk/labelwriter.git
+    ignore = dirty
