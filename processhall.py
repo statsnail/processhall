@@ -14,7 +14,7 @@ import os
 from PyQt5.QtWidgets import (QFrame, QDesktopWidget, QMainWindow, QAction, QWidget, qApp, QGridLayout,
     QPushButton, QApplication, QVBoxLayout, QLabel, QLineEdit)
 from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QRect
-from PyQt5.QtGui import (QIcon, QFont, QPainter, QBrush, QColor)
+from PyQt5.QtGui import (QIcon, QFont, QPainter, QBrush, QColor, QKeyEvent)
 
 from scale.scale import Scale
 
@@ -195,6 +195,13 @@ class MainWindow(QMainWindow):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+#https://www.riverbankcomputing.com/static/Docs/PyQt4/qevent.html
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+            print(event.type())
+            if event.key() in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Period, Qt.Key_S):
+                print('eventkey')
+                print(event.key())
 
 
 if __name__ == '__main__':
