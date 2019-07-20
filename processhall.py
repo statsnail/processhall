@@ -199,9 +199,10 @@ class MainWindow(QMainWindow):
 #https://www.riverbankcomputing.com/static/Docs/PyQt4/qevent.html
     def keyPressEvent(self, event: QKeyEvent) -> None:
             print(event.type())
-            if event.key() in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Period, Qt.Key_S):
-                print('eventkey')
-                print(event.key())
+            if event.key() in (Qt.Plus):
+                print('key plus pressed, ignore')
+                ev.ignore()
+                return True
 
 
 if __name__ == '__main__':
