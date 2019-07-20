@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (QFrame, QDesktopWidget, QMainWindow, QAction, QWidg
 from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QRect
 from PyQt5.QtGui import (QIcon, QFont, QPainter, QBrush, QColor)
 
-from scale import Scale
+from scale.scale import Scale
 
 class ScaleFrame(QFrame):
     def __init__(self, parent):
