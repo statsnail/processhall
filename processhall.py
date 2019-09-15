@@ -1,14 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""
-
-
-Author: Jan Bodnar
-Website: zetcode.com 
-Last edited: August 2017
-"""
-
 import sys
 import os
 from PyQt5.QtWidgets import (QFrame, QDesktopWidget, QMainWindow, QAction, QWidget, qApp, QGridLayout,
@@ -17,6 +9,7 @@ from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QRect
 from PyQt5.QtGui import (QIcon, QFont, QPainter, QBrush, QColor, QKeyEvent)
 
 from scale.scale import Scale
+
 
 class ScaleFrame(QFrame):
     def __init__(self, parent):

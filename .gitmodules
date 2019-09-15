@@ -1,3 +1,6 @@
 [submodule "scale"]
 	path = scale
 	url = git@github.com:statsnail/scale.git
+[submodule "labelwriter"]
+	path = labelwriter
+	url = git@github.com:statsnail/labelwriter.git
