@@ -4,12 +4,22 @@
 import sys
 import os
 from PyQt5.QtWidgets import (QFrame, QDesktopWidget, QMainWindow, QAction, QWidget, qApp, QGridLayout,
-    QPushButton, QApplication, QVBoxLayout, QLabel, QLineEdit)
-from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QRect
+    QPushButton, QApplication, QVBoxLayout,QHBoxLayout, QLabel, QLineEdit, QComboBox, QCalendarWidget)
+from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QRect, pyqtSlot
 from PyQt5.QtGui import (QIcon, QFont, QPainter, QBrush, QColor, QKeyEvent)
+
+import yaml
 
 from scale.scale import Scale
 
+GLOBAL_PRODUCTS = None
+with open("products.yml", 'r') as ymlfile:
+    GLOBAL_PRODUCTS = yaml.safe_load(ymlfile)
+
+# customers.yml is excluded from the repo, example in customers_example.yml
+GLOBAL_CUSTOMERS = None
+with open("customers.yml", 'r') as ymlfile:
+    GLOBAL_CUSTOMERS = yaml.safe_load(ymlfile)
 
 class ScaleFrame(QFrame):
     def __init__(self, parent):
@@ -26,13 +36,13 @@ class ScaleFrame(QFrame):
         self.lbl_weight.setObjectName('lbl_weight')
         self.lbl_weight.setText("0.000")
         self.lbl_weight.resize(500, 100)
-        self.lbl_weight.move(200, 50)
+        self.lbl_weight.move(50, 50)
 
         lbl_unit = QLabel(self)
         lbl_unit.setObjectName('lbl_unit')
         lbl_unit.setText("kg")
         lbl_unit.resize(100, 120)
-        lbl_unit.move(500, 40)
+        lbl_unit.move(350, 40)
 
         #self.lbl_status = QLabel(self)
         #self.lbl_status.setText("MAYBE ON")
@@ -79,52 +89,108 @@ class ScaleFrame(QFrame):
 
 
 class LabelFrame(QWidget):
+    #asignal = pyqtSignal(str)
+
     def __init__(self, parent):
+        global GLOBAL_PRODUCTS
+
         super(LabelFrame, self).__init__(parent)
         self.parent = parent
         print('LabelFrame: my parent is',self.parent)
         self.initFrame()
 
     def initFrame(self):
+        self.setFixedWidth(500)
+
         layout = QGridLayout()
 
-        lbl_language = QLabel('Language')
-        input_language = QLineEdit()
-
         lbl_product = QLabel('Product')
-        input_product = QLineEdit()
+        self.input_product = QComboBox(self)
+        for product in GLOBAL_PRODUCTS:
+            self.input_product.addItem(GLOBAL_PRODUCTS[product]['friendlyname']['NOR'])
+
+        lbl_language = QLabel('Language')
+        self.input_language = QComboBox(self)
+        self.input_language.addItems(['Norwegian', 'English', 'Spanish', 'Dutch', 'French'])
 
         lbl_grade = QLabel('Grade')
-        input_grade = QLineEdit()
+        self.input_grade = QComboBox(self)
+        self.input_grade.addItem('Select a product')
 
         lbl_processing = QLabel('Processing')
-        input_processing = QLineEdit()
+        self.input_processing = QComboBox(self)
+        self.input_processing.addItem('Select a product')
 
-        lbl_batch = QLabel('Processing')
-        input_batch = QLineEdit()
+        lbl_batch = QLabel('Batch')
+        self.input_batch = QLineEdit(self)
+        self.input_batch.setText('000001')
 
         lbl_harvest_date = QLabel('Harvest date')
-        input_harvest_date = QLineEdit()
+        self.input_harvest_date = QCalendarWidget(self)
+        self.input_harvest_date.resize(100,50)
 
         lbl_customer = QLabel('Customer')
-        input_customer = QLineEdit()
+        self.input_customer = QComboBox(self)
+        self.input_customer.setEditable(True)
+        self.input_customer.addItem('CUSTOMER - You can edit this field if you want')
+        for customer in GLOBAL_CUSTOMERS:
+            self.input_customer.addItem(GLOBAL_CUSTOMERS[customer]['printablename'])
+
+        self.btn_print_label = QPushButton('Print Label', self)
+        self.btn_print_label.setFixedHeight(50)
+
 
         layout.setSpacing(10)
         layout.addWidget(lbl_language, 1, 0)
-        layout.addWidget(input_language, 1, 1)
+        layout.addWidget(self.input_language, 1, 1)
         layout.addWidget(lbl_product, 2, 0)
-        layout.addWidget(input_product, 2, 1)
+        layout.addWidget(self.input_product, 2, 1)
         layout.addWidget(lbl_grade, 3, 0)
-        layout.addWidget(input_grade, 3, 1)
+        layout.addWidget(self.input_grade, 3, 1)
         layout.addWidget(lbl_processing, 4, 0)
-        layout.addWidget(input_processing, 4, 1)
+        layout.addWidget(self.input_processing, 4, 1)
         layout.addWidget(lbl_batch, 5, 0)
-        layout.addWidget(input_batch, 5, 1)
+        layout.addWidget(self.input_batch, 5, 1)
         layout.addWidget(lbl_harvest_date, 6, 0)
-        layout.addWidget(input_harvest_date, 6, 1)
+        layout.addWidget(self.input_harvest_date, 6, 1)
         layout.addWidget(lbl_customer, 7, 0)
-        layout.addWidget(input_customer, 7, 1)
-        self.setLayout(layout) 
+        layout.addWidget(self.input_customer, 7, 1)
+        layout.addWidget(self.btn_print_label, 8, 1)
+        self.setLayout(layout)
+
+        # Set up signals
+        self.input_product.currentIndexChanged[int].connect(self.on_product_combo_currentIndexChanged)
+        self.input_language.activated[str].connect(self.on_language_combo_activated)
+        self.btn_print_label.clicked.connect(self.on_print_label_clicked)
+
+
+    @pyqtSlot()
+    def on_print_label_clicked(self):
+        print('PRINTING LABEL')
+
+    @pyqtSlot(str)
+    def on_language_combo_activated(self, text):
+        print(text)
+        #self.asignal.emit('selected', text)
+    def on_product_combo_currentIndexChanged(self, index):
+        self.input_grade.clear()
+        print('index', index)
+        #product = text
+        for i, grade in enumerate(GLOBAL_PRODUCTS[index]['grades']): # A dictionary
+            print(grade)
+            self.input_grade.addItem(grade[i])
+
+        self.input_processing.clear()
+        print('index', index)
+        #product = text
+        for i, process in enumerate(GLOBAL_PRODUCTS[index]['processing']): # A dictionary
+            print(process)
+            self.input_processing.addItem(process)
+        
+        
+        #print(self.productsfile)
+        #print(text)
+
 
 
 class CentralFrame(QFrame):
@@ -135,19 +201,20 @@ class CentralFrame(QFrame):
         self.initFrame()
 
     def initFrame(self):
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
 
 
-        printbtn = QPushButton('Print Label', self)
-        printbtn.clicked.connect(QApplication.instance().quit)
-        printbtn.resize(printbtn.sizeHint())
+        #printbtn = QPushButton('Print Label', self)
+        #printbtn.clicked.connect(QApplication.instance().quit)
+        #printbtn.resize(printbtn.sizeHint())
 
-        labelframe = LabelFrame(self)
-        scaleframe = ScaleFrame(self)
+        self.labelframe = LabelFrame(self)
+        self.scaleframe = ScaleFrame(self)
 
-        layout.addWidget(labelframe)
-        layout.addWidget(scaleframe)
-        layout.addWidget(printbtn)
+
+        layout.addWidget(self.labelframe)
+        layout.addWidget(self.scaleframe)
+        #layout.addWidget(printbtn)
         self.setLayout(layout)
 
 class MainWindow(QMainWindow):
@@ -158,10 +225,10 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-
-
         centralframe = CentralFrame(self)
         self.setCentralWidget(centralframe)
+
+       #self.centralframe.labelframe.asignal.connect(self.widgetB.on_procStart)
 
         exitAct = QAction(QIcon('exit.png'), '&Exit', self)        
         exitAct.setShortcut('Ctrl+Q')
@@ -178,9 +245,9 @@ class MainWindow(QMainWindow):
 
         path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'icon.png')
         self.setWindowIcon(QIcon(path))
-        self.setGeometry(800, 600, 800, 600)
+        self.setGeometry(1000, 600, 1000, 600)
         self.center()
-        self.setWindowTitle('Seafood Packing Software')
+        self.setWindowTitle('Statsnail AS - Seafood Labelling Software')
         self.show()
 
     def center(self):
@@ -199,6 +266,13 @@ class MainWindow(QMainWindow):
                 return True
         except:
             pass
+
+    @pyqtSlot() # https://stackoverflow.com/questions/49480437/pyqt5-qcombobox-how-do-i-use-the-selected-value-of-the-user-to-execute-a-specif
+    def on_click(self):
+        print('Clicked self?')
+
+    def onActivated(self, text):
+        self.lbl_customer = text
 
 
 if __name__ == '__main__':

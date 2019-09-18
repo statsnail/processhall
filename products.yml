@@ -1,0 +1,43 @@
+0:
+    friendlyname:
+      NOR: Strandsnegl
+      ENG: Common Periwinkle
+      FRA: Bigorneau
+      SPA: Bígaro
+      NLD: Alikruik
+    scientificname: Littorina littorea
+    productionmethod: Handpicked
+    gtin: 7072773000009
+    grades:
+      - 0: Unsorted
+        pcs: N/A #/kg
+      - 1: Medium
+        pcs: 240+ #/kg
+      - 2: Large
+        pcs: 180-240 #/kg
+      - 3: Jumbo
+        pcs: 140-180 #/kg
+      - 4: Super Jumbo
+        pcs: 90-140 #/kg
+    processing:
+      - Climbed
+      - Not climbed
+1:
+    friendlyname:
+      NOR: Grønn Kråkebolle
+      ENG: Green Sea Urchin
+      FRA: Oursin Vert
+      SPA: Erizo de mar verde
+      NLD: Groene Zee-egel
+    scientificname: Strongylocentrotus droebachiensis
+    productionmethod: Handpicked
+    gtin: 7072773000016
+    grades:
+      - 0: Unsorted
+        pcs: N/A #/kg
+      - 1: Medium
+        pcs: 10-16 #/kg
+      - 2: Large
+        pcs: <10 #/kg
+    processing:
+      - N/A
