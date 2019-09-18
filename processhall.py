@@ -10,8 +10,11 @@ from PyQt5.QtGui import (QIcon, QFont, QPainter, QBrush, QColor, QKeyEvent)
 
 import yaml
 
+# Submodules
 from scale.scale import Scale
+from labelwriter.labelwriter import Labelwriter
 
+# Product list used to populate fields
 GLOBAL_PRODUCTS = None
 with open("products.yml", 'r') as ymlfile:
     GLOBAL_PRODUCTS = yaml.safe_load(ymlfile)
@@ -29,6 +32,8 @@ class ScaleFrame(QFrame):
         self.initFrame()
 
     def initFrame(self):
+        self.commaweight = ''
+
         self.timer = QBasicTimer()
         self.myscale = Scale(10202)
 
@@ -83,6 +88,7 @@ class ScaleFrame(QFrame):
         if event.timerId() == self.timer.timerId():
             time_last_received, weight = self.myscale.return_last_weight()
             self.window().statusbar.showMessage(F"Last received: {time_last_received}")
+            self.commaweight = str(F"{weight:.2f}").replace('.',',') # HACK HACK
             self.lbl_weight.setText(F"{weight:.3f}")
         else:
             super(Board, self).timerEvent(event)
@@ -100,6 +106,13 @@ class LabelFrame(QWidget):
         self.initFrame()
 
     def initFrame(self):
+        self.mylabelwriter = Labelwriter('192.168.1.3', 9100)
+        self.mylabelwriter.beep()
+
+        self.productindexselected = 0
+
+        #mylabelwriter.print_label(**kwarg_partial)
+
         self.setFixedWidth(500)
 
         layout = QGridLayout()
@@ -111,11 +124,13 @@ class LabelFrame(QWidget):
 
         lbl_language = QLabel('Language')
         self.input_language = QComboBox(self)
-        self.input_language.addItems(['Norwegian', 'English', 'Spanish', 'Dutch', 'French'])
+        self.input_language.addItems(['NOR - Norwegian', 'ENG - English', 'SPA - Spanish', 'NLD - Dutch', 'FRA - French'])
 
         lbl_grade = QLabel('Grade')
         self.input_grade = QComboBox(self)
         self.input_grade.addItem('Select a product')
+
+        self.lbl_pcskg = QLabel('pcskg')
 
         lbl_processing = QLabel('Processing')
         self.input_processing = QComboBox(self)
@@ -139,6 +154,9 @@ class LabelFrame(QWidget):
         self.btn_print_label = QPushButton('Print Label', self)
         self.btn_print_label.setFixedHeight(50)
 
+        self.input_printhack = QLineEdit(self)
+        self.input_printhack.setText('')
+        self.input_printhack.setPlaceholderText('++++++')
 
         layout.setSpacing(10)
         layout.addWidget(lbl_language, 1, 0)
@@ -147,34 +165,100 @@ class LabelFrame(QWidget):
         layout.addWidget(self.input_product, 2, 1)
         layout.addWidget(lbl_grade, 3, 0)
         layout.addWidget(self.input_grade, 3, 1)
-        layout.addWidget(lbl_processing, 4, 0)
-        layout.addWidget(self.input_processing, 4, 1)
-        layout.addWidget(lbl_batch, 5, 0)
-        layout.addWidget(self.input_batch, 5, 1)
-        layout.addWidget(lbl_harvest_date, 6, 0)
-        layout.addWidget(self.input_harvest_date, 6, 1)
-        layout.addWidget(lbl_customer, 7, 0)
-        layout.addWidget(self.input_customer, 7, 1)
-        layout.addWidget(self.btn_print_label, 8, 1)
+        layout.addWidget(self.lbl_pcskg, 4, 1)
+        layout.addWidget(lbl_processing, 5, 0)
+        layout.addWidget(self.input_processing, 5, 1)
+        layout.addWidget(lbl_batch, 6, 0)
+        layout.addWidget(self.input_batch, 6, 1)
+        layout.addWidget(lbl_harvest_date, 7, 0)
+        layout.addWidget(self.input_harvest_date, 7, 1)
+        layout.addWidget(lbl_customer, 8, 0)
+        layout.addWidget(self.input_customer, 8, 1)
+        layout.addWidget(self.input_printhack, 9, 0)
+        layout.addWidget(self.btn_print_label, 9, 1)
         self.setLayout(layout)
 
         # Set up signals
         self.input_product.currentIndexChanged[int].connect(self.on_product_combo_currentIndexChanged)
+        self.input_grade.currentIndexChanged[int].connect(self.on_grade_combo_currentIndexChanged)
+
         self.input_language.activated[str].connect(self.on_language_combo_activated)
         self.btn_print_label.clicked.connect(self.on_print_label_clicked)
 
+        self.input_printhack.textEdited[str].connect(self.on_printhack_edited)
 
     @pyqtSlot()
     def on_print_label_clicked(self):
         print('PRINTING LABEL')
 
+        langhack = self.input_language.currentText()[0:3] # Not very smart...
+        productindex = self.input_product.currentIndex() # So much hack, very profit.
+        friendlyname = GLOBAL_PRODUCTS[productindex]['friendlyname'][langhack]
+        scientificname = GLOBAL_PRODUCTS[productindex]['scientificname']
+        productionmethod = self.input_processing.currentText()
+        grade = self.input_grade.currentText()
+        customer = self.input_customer.currentText()
+        batchno = self.input_batch.text()
+# http://zetcode.com/gui/pyqt5/datetime/
+        catchdate = self.input_harvest_date.selectedDate().toString(format = Qt.ISODate)
+        
+        print(grade)
+        pcskg = self.lbl_pcskg.text()
+        
+        #print(pcskg)
+        #for i, grade in enumerate(GLOBAL_PRODUCTS[index]['grades']): # A dictionary
+         #   print(grade)
+         #   self.input_grade.addItem(grade[i])
+
+
+        if langhack == 'NOR':
+            productinthirdlanguage = ''
+        elif langhack == 'ENG':
+            productinthirdlanguage = ''
+        elif langhack == 'SPA':
+            productinthirdlanguage = 'Nombre del producto'
+        elif langhack == 'FRA':
+            productinthirdlanguage = 'Nom du produit'
+        elif langhack == 'NLD':
+            productinthirdlanguage = 'Productnaam'
+        else:
+            productinthirdlanguage = ''
+
+        print(friendlyname)
+        kwarg_partial = {
+            'friendlyname':friendlyname,
+            'scientificname':scientificname,
+            'productinthirdlanguage':productinthirdlanguage,
+            'gtin':GLOBAL_PRODUCTS[productindex]['gtin'],# 
+            'processingmethod':productionmethod,
+            'weight':self.parent.scaleframe.commaweight,
+            'grade':grade,
+            'customer':customer,
+            'batchno':batchno,
+            'catchdate':catchdate,
+            'pcskg':pcskg
+        }
+
+        print(kwarg_partial)
+        #print(self.parent.scaleframe.lbl_weight.text())
+        self.mylabelwriter.print_label(**kwarg_partial)
+
     @pyqtSlot(str)
+    def on_printhack_edited(self, text):
+        print(text)
+        if len(text) > 0:
+            if text[-1] == '+':
+                print('pluss')
+                self.on_print_label_clicked()
+                # Acitvate label print
+
     def on_language_combo_activated(self, text):
         print(text)
         #self.asignal.emit('selected', text)
     def on_product_combo_currentIndexChanged(self, index):
         self.input_grade.clear()
         print('index', index)
+        self.productindexselected = index
         #product = text
         for i, grade in enumerate(GLOBAL_PRODUCTS[index]['grades']): # A dictionary
             print(grade)
@@ -186,7 +270,17 @@ class LabelFrame(QWidget):
         for i, process in enumerate(GLOBAL_PRODUCTS[index]['processing']): # A dictionary
             print(process)
             self.input_processing.addItem(process)
+
+
+    def on_grade_combo_currentIndexChanged(self, index):
+        if index == -1:
+            return
         
+
+        pcskg = GLOBAL_PRODUCTS[self.productindexselected]['grades'][index]['pcs']
+        print(pcskg)
+        self.lbl_pcskg.setText(pcskg)
+        #self.lbl_pcskg.setText(GLOBAL_PRODUCTS[index]['grades'][index])
         
         #print(self.productsfile)
         #print(text)
