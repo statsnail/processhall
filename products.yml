@@ -3,7 +3,7 @@
       NOR: Strandsnegl
       ENG: Common Periwinkle
       FRA: Bigorneau
-      SPA: Bígaro
+      SPA: Bigaro
       NLD: Alikruik
     scientificname: Littorina littorea
     productionmethod: Handpicked
@@ -24,7 +24,7 @@
       - Not climbed
 1:
     friendlyname:
-      NOR: Grønn Kråkebolle
+      NOR: Green Sea Urchin
       ENG: Green Sea Urchin
       FRA: Oursin Vert
       SPA: Erizo de mar verde
@@ -39,5 +39,39 @@
         pcs: 10-16 #/kg
       - 2: Large
         pcs: <10 #/kg
+    processing:
+      - N/A
+2:
+    friendlyname:
+      NOR: Surprise box
+      ENG: Surprise box
+      FRA: Surprise box
+      SPA: Surprise box
+      NLD: Surprise box
+    scientificname: NA
+    productionmethod: NA
+    gtin: 7072773000092
+    grades:
+      - 0: Unsorted
+        pcs: N/A #/kg
+    processing:
+      - N/A
+3:
+    friendlyname:
+      NOR: Hjerteskjell
+      ENG: Coque
+      FRA: Surprise box
+      SPA: Berberechos
+      NLD: Kokkel
+    scientificname: Cerastoderma edule
+    productionmethod: Handpicked
+    gtin: 7072773000054
+    grades:
+      - 0: Unsorted
+        pcs: N/A #/kg
+      - 1: Medium
+        pcs: N/A #/kg
+      - 2: Large
+        pcs: N/A #/kg
     processing:
       - N/A
