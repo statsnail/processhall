@@ -19,7 +19,9 @@ GLOBAL_PRODUCTS = None
 with open("products.yml", 'r') as ymlfile:
     GLOBAL_PRODUCTS = yaml.safe_load(ymlfile)
 
-# customers.yml is excluded from the repo, example in customers_example.yml
+# customers.yml needs to be updated
+# products.yml needs to be updated
+
 GLOBAL_CUSTOMERS = None
 with open("customers.yml", 'r') as ymlfile:
     GLOBAL_CUSTOMERS = yaml.safe_load(ymlfile)
@@ -48,17 +50,6 @@ class ScaleFrame(QFrame):
         lbl_unit.setText("kg")
         lbl_unit.resize(100, 120)
         lbl_unit.move(350, 40)
-
-        #self.lbl_status = QLabel(self)
-        #self.lbl_status.setText("MAYBE ON")
-        #self.lbl_status.resize(100, 100)
-        #self.lbl_status.move(700, 10)
-
-
-        #qbtn = QPushButton('Jalla', self)
-        #qbtn.clicked.connect(QApplication.instance().quit)
-        #qbtn.resize(qbtn.sizeHint())
-        #qbtn.move(150, 150)
 
         self.setObjectName('ScaleFrame')
         self.setStyleSheet("""
@@ -106,7 +97,7 @@ class LabelFrame(QWidget):
         self.initFrame()
 
     def initFrame(self):
-        self.mylabelwriter = Labelwriter('192.168.1.3', 9100)
+        self.mylabelwriter = Labelwriter('127.0.0.1', 9100)
         self.mylabelwriter.beep()
 
         self.productindexselected = 0

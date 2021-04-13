@@ -59,8 +59,8 @@
 3:
     friendlyname:
       NOR: Hjerteskjell
-      ENG: Coque
-      FRA: Surprise box
+      ENG: Cockle
+      FRA: Coque
       SPA: Berberechos
       NLD: Kokkel
     scientificname: Cerastoderma edule
@@ -72,6 +72,44 @@
       - 1: Medium
         pcs: N/A #/kg
       - 2: Large
+        pcs: N/A #/kg
+    processing:
+      - N/A
+4:
+    friendlyname:
+      NOR: Sjøkreps
+      ENG: Norway lobster
+      FRA: Langoustine
+      SPA: Cigala
+      NLD: Noors kreeftje
+    scientificname: Nephrops norvegicus
+    productionmethod: Creel-fished
+    gtin: 7072773000061
+    grades:
+      - 0: Unsorted
+        pcs: N/A #/kg
+      - 1: Small
+        pcs: 12+ #/kg
+      - 2: Medium
+        pcs: 8-12 #/kg
+      - 3: Large
+        pcs: 4-8 #/kg
+      - 4: Extra large
+        pcs: 2-4 #/kg
+    processing:
+      - N/A
+5:
+    friendlyname:
+      NOR: Albusnegl
+      ENG: Common limpet
+      FRA: Patelle commune
+      SPA: Lapa común
+      NLD: Gewone schaalhoren
+    scientificname: Patella vulgata
+    productionmethod: Handpicked
+    gtin: 7072773000078
+    grades:
+      - 0: Unsorted
         pcs: N/A #/kg
     processing:
       - N/A
